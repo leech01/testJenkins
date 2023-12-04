@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.springboot.dao.ReplyMapper">
+    
+    <select id="getReplyList" parameterType="com.springboot.service.ReplyDTO" resultType="com.springboot.service.ReplyDTO">
+<!--     	SELECT * -->
+<!--     	  FROM TB_BOARD_REPLY -->
+<!--     	 WHERE STS = '0' -->
+<!--     	   AND BOARD_SEQ = #{board_seq} -->
+		<![CDATA[
+		SELECT A.SEQ
+		     , A.BOARD_SEQ
+		     , A.PARENT
+		     , A.CONTENT
+		     , A.ORIGIN_SEQ
+		     , A.REG_DT
+		     , A.REG_ID
+		     , A.UPD_DT
+		     , CONCAT_WS('>', B.SEQ, A.SEQ) AS FULLPATH
+		  FROM TB_BOARD_REPLY A
+		  LEFT OUTER JOIN TB_BOARD_REPLY B ON A.PARENT = B.SEQ
+		 WHERE A.STS = '0'
+		   AND A.BOARD_SEQ = #{board_seq}
+ 		 ORDER BY ORIGIN_SEQ DESC, FULLPATH ASC
+		]]>
+    </select>
+    
+    <insert id="insertReply" parameterType="com.springboot.service.ReplyDTO" useGeneratedKeys="true" keyProperty="seq">
+    	INSERT INTO TB_BOARD_REPLY (
+    		BOARD_SEQ
+    	  , PARENT
+    	  , CONTENT
+    	  , ORIGIN_SEQ
+    	  , REG_DT
+    	  , REG_ID
+    	) VALUES (
+    		#{board_seq}
+    	  , #{parent}
+    	  , #{content}
+    	  , #{parent}
+    	  , NOW()
+    	  , #{reg_id}
+    	)
+    </insert>
+    
+    <update id="updateOriginSeq" parameterType="com.springboot.service.ReplyDTO">
+    	UPDATE TB_BOARD_REPLY
+    	   SET ORIGIN_SEQ = #{origin_seq}
+    	 WHERE SEQ = #{seq}
+    </update>
+ 
+</mapper>

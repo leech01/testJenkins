@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.springboot.dao.UserMapper">
+ 
+    <select id="userCheck" resultType="int">
+    	SELECT COUNT(*)
+    	  FROM TB_USERS
+    	 WHERE STS = 0
+    </select>
+    
+    <select id="getUserList" parameterType="com.springboot.service.UserDTO" resultType="com.springboot.service.UserDTO">
+    	SELECT *
+    	  FROM TB_USERS
+    	 WHERE STS = 0
+    </select>
+    
+    <select id="getUserOne" parameterType="com.springboot.service.UserDTO" resultType="com.springboot.service.UserDTO">
+    	SELECT *
+    	  FROM TB_USERS
+    	 WHERE USER_ID = #{user_id}
+    </select>
+    
+	<insert id="insertUser" parameterType="com.springboot.service.UserDTO">
+		INSERT INTO TB_USERS (
+			USER_ID
+		  , USER_NM
+		  , PASSWD
+		  , STS
+		  , ADDRESS
+		  , PHONE
+		  , MAIL
+		  , REG_DT
+		  , REG_ID
+		) VALUES (
+			#{user_id}
+		  , #{user_nm}
+		  , #{passwd}
+		  , '0'
+		  , #{address}
+		  , #{phone}
+		  , #{mail}
+		  , DATE_FORMAT(now(), '%Y%m%d')
+		  , 'admin'
+		)
+	</insert>
+	
+	<update id="updateUser" parameterType="com.springboot.service.UserDTO">
+		UPDATE TB_USERS
+		   SET UPD_DT = DATE_FORMAT(now(), '%Y%m%d')
+		     , UPD_ID = #{upd_id}
+		     <if test='user_nm != null and user_nm != ""'>
+		     , USER_NM = #{user_nm}
+		     </if>
+		     <if test='passwd != null and passwd != ""'>
+		     , PASSWD = #{passwd}
+		     </if>
+		     <if test='address != null and address != ""'>
+		     , ADDRESS = #{address}
+		     </if>
+		     <if test='phone != null and phone != ""'>
+		     , PHONE = #{phone}
+		     </if>
+		     <if test='mail != null and mail != ""'>
+		     , MAIL = #{mail}
+		     </if>
+		 WHERE USER_ID = #{user_id}
+	</update>
+	
+	<delete id="deleteUser" parameterType="com.springboot.service.UserDTO">
+		UPDATE TB_USERS
+		   SET STS = '1'
+		 WHERE USER_ID = #{user_id}
+	</delete>
+ 
+</mapper>
